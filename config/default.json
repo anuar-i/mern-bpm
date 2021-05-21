@@ -1,0 +1,7 @@
+
+{
+  "port" : 5000,
+  "jwtSecret": "anuar bpm",
+  "mongoUri" : "mongodb+srv://anuar:123qwe@cluster0.a15sq.mongodb.net/app?retryWrites=true&w=majority",
+  "baseUrl": "http://localhost:5000"
+}
