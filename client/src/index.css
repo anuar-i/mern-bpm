@@ -18,3 +18,47 @@ input.yellow-input:focus {
   border-bottom: 1px solid #ffeb3b!important;
   box-shadow: 0 1px 0 0 #ffeb3b!important;
 }
+
+.bpmn-modeler {
+  text-align: center;
+}
+
+.bpmn-modeler-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .bpmn-modeler-logo {
+    animation: bpmn-modeler-logo-spin infinite 20s linear;
+  }
+}
+
+.bpmn-modeler-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.bpmn-modeler-link {
+  color: #61dafb;
+}
+
+@keyframes bpmn-modeler-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.highlight:not(.djs-connection) .djs-visual > :nth-child(1) {
+  fill: green !important; /* color elements as green */
+  stroke: yellow;
+}
