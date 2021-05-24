@@ -15,7 +15,7 @@
     "mern",
     "react"
   ],
-  "author": "Vladilen Minin <vladilen.m@yandex.ru>",
+  "author": "Anuar Imashev <anuar.imashev@gmail.com>",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
