@@ -62,3 +62,7 @@ input.yellow-input:focus {
   fill: green !important; /* color elements as green */
   stroke: yellow;
 }
+
+.bjs-container:first-child, .bjs-container:nth-child(2) {
+  display: none;
+}

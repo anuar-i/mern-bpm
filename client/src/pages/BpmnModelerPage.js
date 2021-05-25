@@ -34,7 +34,7 @@ export function BpmnModelerPage({ isEdit }) {
         fetchDefaultProcess();
       }
     }
-  }, []);
+  }, [diagram]);
 
   const fetchSaveProcess = useCallback(async (process) => {
     try {
@@ -46,7 +46,7 @@ export function BpmnModelerPage({ isEdit }) {
         message(fetched.message);
       }
     } catch (e) {}
-  }, [token, request])
+  }, [token, request]);
 
   const fetchProcess = useCallback(async () => {
     try {
@@ -58,7 +58,6 @@ export function BpmnModelerPage({ isEdit }) {
 
       const processXml = builder.buildObject(JSON.parse(fetched.process));
 
-      console.log(processXml)
       setDiagram(processXml);
     } catch (e) {}
   }, [token, request])
@@ -69,7 +68,6 @@ export function BpmnModelerPage({ isEdit }) {
         Authorization: `Bearer ${token}`
       });
 
-      console.log(fetched);
       setDiagram(fetched.defaultProcess);
     } catch (e) {}
   }, [token, request])
