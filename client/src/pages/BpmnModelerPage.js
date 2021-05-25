@@ -48,6 +48,18 @@ export function BpmnModelerPage({ isEdit }) {
     } catch (e) {}
   }, [token, request]);
 
+  const fetchEditProcess = useCallback(async (process) => {
+    try {
+      const fetched = await request('/api/process', 'PUT', {processId, process}, {
+        Authorization: `Bearer ${token}`
+      });
+
+      if (fetched) {
+        message(fetched.message);
+      }
+    } catch (e) {}
+  }, [token, request]);
+
   const fetchProcess = useCallback(async () => {
     try {
       const fetched = await request(`/api/process/${processId}`, 'GET', null, {
@@ -100,7 +112,11 @@ export function BpmnModelerPage({ isEdit }) {
           console.error(err);
         }
 
-        fetchSaveProcess(JSON.stringify(json));
+        if (isEdit) {
+          fetchEditProcess(JSON.stringify(json))
+        } else {
+          fetchSaveProcess(JSON.stringify(json));
+        }
       });
     });
   }
