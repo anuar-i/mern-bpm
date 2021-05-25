@@ -2,25 +2,26 @@ import React, {useCallback, useContext, useEffect, useState} from 'react'
 import {useHttp} from '../hooks/http.hook'
 import {AuthContext} from '../context/AuthContext'
 import {Loader} from '../components/Loader'
-import {LinksList} from '../components/LinksList'
+import {ProcessesList} from '../components/ProcessesList'
 
-export const LinksPage = () => {
-  const [links, setLinks] = useState([])
+export const ProcessesPage = () => {
+  const [processes, setProcesses] = useState([])
   const {loading, request} = useHttp()
   const {token} = useContext(AuthContext)
 
-  const fetchLinks = useCallback(async () => {
+  const fetchProcesses = useCallback(async () => {
     try {
-      const fetched = await request('/api/link', 'GET', null, {
+      return await request('/api/process', 'GET', null, {
         Authorization: `Bearer ${token}`
       })
-      setLinks(fetched)
     } catch (e) {}
   }, [token, request])
 
   useEffect(() => {
-    fetchLinks()
-  }, [fetchLinks])
+    fetchProcesses().then((res) => {
+      setProcesses(res)
+    })
+  }, [fetchProcesses])
 
   if (loading) {
     return <Loader/>
@@ -28,7 +29,7 @@ export const LinksPage = () => {
 
   return (
     <>
-      {!loading && <LinksList links={links} />}
+      {!loading && <ProcessesList processes={processes} />}
     </>
   )
 }
