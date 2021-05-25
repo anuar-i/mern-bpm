@@ -63,6 +63,14 @@ input.yellow-input:focus {
   stroke: yellow;
 }
 
-.bjs-container:first-child, .bjs-container:nth-child(2) {
+.bjs-container:first-child, .bjs-container:nth-child(2), .bjs-container:nth-child(4) {
   display: none;
+}
+
+.bjs-powered-by {
+  display: none;
+}
+
+.save-link {
+  margin-right: 10px;
 }

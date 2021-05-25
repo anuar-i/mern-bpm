@@ -117,13 +117,18 @@ export function BpmnModelerPage({ isEdit }) {
       });
   }
 
-  function saveXML() {
+  function saveXML(isDownload = false) {
     modeler.saveXML().then(({ xml }) => {
       const { parseString } = xml2js;
 
       parseString(xml, (err, json) => {
         if (err) {
           console.error(err);
+        }
+
+        if (isDownload) {
+          download(JSON.stringify(json), 'file.txt');
+          return;
         }
 
         if (isEdit) {
@@ -133,6 +138,24 @@ export function BpmnModelerPage({ isEdit }) {
         }
       });
     });
+  }
+
+  function download(data, filename, type) {
+    const file = new Blob([data], {type: type});
+    if (window.navigator.msSaveOrOpenBlob) // IE10+
+      window.navigator.msSaveOrOpenBlob(file, filename);
+    else { // Others
+      const a = document.createElement("a"),
+        url = URL.createObjectURL(file);
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function() {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      }, 0);
+    }
   }
 
   return (
@@ -147,10 +170,18 @@ export function BpmnModelerPage({ isEdit }) {
         }}
       />
       <a
+        className="save-link"
         download='list.txt'
         onClick={saveXML}
       >
         Save process
+      </a>
+
+      <a
+        download='list.txt'
+        onClick={() => saveXML(true)}
+      >
+        Download process
       </a>
     </div>
   );
