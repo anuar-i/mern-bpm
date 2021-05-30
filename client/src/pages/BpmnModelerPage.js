@@ -167,6 +167,10 @@ export function BpmnModelerPage({ isEdit, isCreate }) {
         } else {
           fetchSaveProcess(JSON.stringify(json));
         }
+
+        fetchProcesses().then((res) => {
+          setProcesses(res)
+        })
       });
     });
   }

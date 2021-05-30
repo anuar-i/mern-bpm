@@ -15,6 +15,7 @@ router.post('/', auth, async (req, res) => {
 
     res.status(200).json({ message: 'Процесс создался' })
   } catch (e) {
+    console.log(e)
     res.status(500).json({ message: 'Что-то пошло не так, попробуйте снова' })
   }
 })
