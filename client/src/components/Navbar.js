@@ -17,8 +17,6 @@ export const Navbar = () => {
       <div className="nav-wrapper blue darken-1" style={{ padding: '0 2rem' }}>
         <span className="brand-logo">Process modeler</span>
         <ul id="nav-mobile" className="right hide-on-med-and-down">
-          <li><NavLink to="/create">Create</NavLink></li>
-          <li><NavLink to="/processes">Processes</NavLink></li>
           <li><a href="/" onClick={logoutHandler}>Log out</a></li>
         </ul>
       </div>

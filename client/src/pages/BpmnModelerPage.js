@@ -5,28 +5,41 @@ import "bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css";
 import {useHttp} from "../hooks/http.hook";
 import {AuthContext} from "../context/AuthContext";
 import {useMessage} from "../hooks/message.hook";
-import {useParams} from "react-router-dom";
+import {useHistory, useParams} from "react-router-dom";
+import {SidebarMenu} from "../components/SidebarMenu";
+import {Loader} from "../components/Loader";
 const xml2js = require('xml2js');
 
-export function BpmnModelerPage({ isEdit }) {
+export function BpmnModelerPage({ isEdit, isCreate }) {
   const [diagram, setDiagram] = useState('');
+  const [processes, setProcesses] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const { token } = useContext(AuthContext);
   const { request } = useHttp();
   const message = useMessage();
+
   const processId = useParams().id;
   const container = document.getElementById("container");
-  const modeler = new Modeler({
+  let modeler = new Modeler({
     container,
     keyboard: {
       bindTo: document
     }
   });
 
+  const history = useHistory();
+
   useEffect(() => {
     if (isEdit) {
-      fetchProcess();
+      fetchProcess(processId);
     }
-  }, []);
+  }, [isEdit]);
+
+  useEffect(() => {
+    if (isCreate) {
+      fetchDefaultProcess();
+    }
+  }, [isCreate]);
 
   useEffect(() => {
     if (!isEdit) {
@@ -60,9 +73,9 @@ export function BpmnModelerPage({ isEdit }) {
     } catch (e) {}
   }, [token, request]);
 
-  const fetchProcess = useCallback(async () => {
+  const fetchProcess = useCallback(async (id) => {
     try {
-      const fetched = await request(`/api/process/${processId}`, 'GET', null, {
+      const fetched = await request(`/api/process/${id}`, 'GET', null, {
         Authorization: `Bearer ${token}`
       });
 
@@ -72,6 +85,23 @@ export function BpmnModelerPage({ isEdit }) {
 
       setDiagram(processXml);
     } catch (e) {}
+  }, [token, request])
+
+  const fetchProcesses = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const fetched = await request('/api/process', 'GET', null, {
+        Authorization: `Bearer ${token}`
+      })
+      if (fetched) {
+        setIsLoading(false);
+      }
+
+      return fetched;
+    } catch (e) {
+      setIsLoading(false)
+      setProcesses([])
+    }
   }, [token, request])
 
   const fetchDefaultProcess = useCallback(async () => {
@@ -99,6 +129,12 @@ export function BpmnModelerPage({ isEdit }) {
   }, [token, request])
 
   if (diagram.length > 0) {
+    const length = document.querySelectorAll('.bjs-container').length;
+    document.querySelectorAll('.bjs-container').forEach((container, index) => {
+      if (length - 1 !== index) {
+        container.remove();
+      }
+    });
     modeler
       .importXML(diagram)
       .then(({ warnings }) => {
@@ -117,7 +153,7 @@ export function BpmnModelerPage({ isEdit }) {
       });
   }
 
-  function saveXML(isDownload = false) {
+  function saveXML() {
     modeler.saveXML().then(({ xml }) => {
       const { parseString } = xml2js;
 
@@ -126,16 +162,25 @@ export function BpmnModelerPage({ isEdit }) {
           console.error(err);
         }
 
-        if (isDownload) {
-          download(JSON.stringify(json), 'file.txt');
-          return;
-        }
-
         if (isEdit) {
           fetchEditProcess(JSON.stringify(json))
         } else {
           fetchSaveProcess(JSON.stringify(json));
         }
+      });
+    });
+  }
+
+  function downloadXML() {
+    modeler.saveXML().then(({ xml }) => {
+      const { parseString } = xml2js;
+
+      parseString(xml, (err, json) => {
+        if (err) {
+          console.error(err);
+        }
+
+        download(JSON.stringify(json), 'file.txt');
       });
     });
   }
@@ -158,31 +203,54 @@ export function BpmnModelerPage({ isEdit }) {
     }
   }
 
-  return (
-    <div className="bpmn-modeler">
-      <div
-        id="container"
-        style={{
-          border: "1px solid #000000",
-          height: "90vh",
-          width: "90vw",
-          margin: "auto"
-        }}
-      />
-      <a
-        className="save-link"
-        download='list.txt'
-        onClick={saveXML}
-      >
-        Save process
-      </a>
+  useEffect(() => {
+    fetchProcesses().then((res) => {
+      setProcesses(res)
+    })
+  }, [fetchProcesses])
 
-      <a
-        download='list.txt'
-        onClick={() => saveXML(true)}
-      >
-        Download process
-      </a>
+  console.log(isLoading)
+  return (
+    <div className="main-page">
+      <aside className='sidebar-menu'>
+        <div className="save-actions">
+          <a
+            className="save-link btn yellow darken-4"
+            download='list.txt'
+            onClick={saveXML}
+          >
+            Save process
+          </a>
+
+          <a
+            className="btn yellow darken-4"
+            download='list.txt'
+            onClick={downloadXML}
+          >
+            Download process
+          </a>
+        </div>
+        <button
+          onClick={() => {
+            history.push("/create");
+          }}
+          className="btn blue darken-4"
+        >
+          Create new process
+        </button>
+        { isLoading ? <Loader/> : <SidebarMenu processes={processes}/> }
+      </aside>
+      <main className="bpmn-modeler">
+        <div
+          id="container"
+          style={{
+            border: "1px solid #000000",
+            height: "90vh",
+            width: "90vw",
+            margin: "auto"
+          }}
+        />
+      </main>
     </div>
   );
 }
