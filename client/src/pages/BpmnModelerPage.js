@@ -135,22 +135,15 @@ export function BpmnModelerPage({ isEdit, isCreate }) {
         container.remove();
       }
     });
-    modeler
-      .importXML(diagram)
-      .then(({ warnings }) => {
-        if (warnings.length) {
-          console.log("Warnings", warnings);
-        }
+    try {
+      loadDiagram();
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
-        const canvas = modeler.get("modeling");
-        canvas.setColor("CalmCustomerTask", {
-          stroke: "green",
-          fill: "yellow"
-        });
-      })
-      .catch((err) => {
-        console.log("error", err);
-      });
+  async function loadDiagram() {
+    await modeler.importXML(diagram);
   }
 
   function saveXML() {
@@ -213,7 +206,6 @@ export function BpmnModelerPage({ isEdit, isCreate }) {
     })
   }, [fetchProcesses])
 
-  console.log(isLoading)
   return (
     <div className="main-page">
       <aside className='sidebar-menu'>
