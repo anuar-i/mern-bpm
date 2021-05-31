@@ -11,7 +11,7 @@ export const ProcessesList = ({ processes = [] }) => {
       <thead>
       <tr>
         <th>№</th>
-        <th>Открыть</th>
+        <th>Open</th>
       </tr>
       </thead>
 
