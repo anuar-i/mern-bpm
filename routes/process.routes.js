@@ -5,10 +5,10 @@ const router = Router()
 
 router.post('/', auth, async (req, res) => {
   try {
-    const {process} = req.body
+    const {process, name} = req.body
 
     const bpmnProcess = new Process({
-      process, owner: req.user.userId
+      process, name, owner: req.user.userId
     })
 
     await bpmnProcess.save()
@@ -22,13 +22,19 @@ router.post('/', auth, async (req, res) => {
 
 router.put('/', auth, async (req, res) => {
   try {
-    const {processId, process} = req.body;
+    const {processId} = req.body;
 
-    Process.findOneAndUpdate({_id: processId}, {process}, {
+    return Process.findOneAndUpdate({_id: processId}, req.body, {
+      new: true,
+      upsert: true,
       returnOriginal: true
+    }, (err, updatedObject) => {
+      if (err || !updatedObject) {
+        return res.json({ error: err });
+      } else {
+        return res.json({ id: updatedObject._id })
+      }
     });
-
-    res.status(200).json({ message: 'Процесс обновился' })
   } catch (e) {
     res.status(500).json({ message: 'Что-то пошло не так, попробуйте снова' })
   }

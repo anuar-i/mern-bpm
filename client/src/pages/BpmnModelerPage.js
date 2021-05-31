@@ -12,6 +12,7 @@ const xml2js = require('xml2js');
 
 export function BpmnModelerPage({ isEdit, isCreate }) {
   const [diagram, setDiagram] = useState('');
+  const [processName, setProcessName] = useState('');
   const [processes, setProcesses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const { token } = useContext(AuthContext);
@@ -49,9 +50,9 @@ export function BpmnModelerPage({ isEdit, isCreate }) {
     }
   }, [diagram]);
 
-  const fetchSaveProcess = useCallback(async (process) => {
+  const fetchSaveProcess = useCallback(async (process, name) => {
     try {
-      const fetched = await request('/api/process', 'POST', {process}, {
+      const fetched = await request('/api/process', 'POST', {process, name}, {
         Authorization: `Bearer ${token}`
       })
 
@@ -61,9 +62,9 @@ export function BpmnModelerPage({ isEdit, isCreate }) {
     } catch (e) {}
   }, [token, request]);
 
-  const fetchEditProcess = useCallback(async (process) => {
+  const fetchEditProcess = useCallback(async (process, name) => {
     try {
-      const fetched = await request('/api/process', 'PUT', {processId, process}, {
+      const fetched = await request('/api/process', 'PUT', {processId, process, name}, {
         Authorization: `Bearer ${token}`
       });
 
@@ -84,6 +85,7 @@ export function BpmnModelerPage({ isEdit, isCreate }) {
       const processXml = builder.buildObject(JSON.parse(fetched.process));
 
       setDiagram(processXml);
+      setProcessName(fetched.name);
     } catch (e) {}
   }, [token, request])
 
@@ -156,9 +158,9 @@ export function BpmnModelerPage({ isEdit, isCreate }) {
         }
 
         if (isEdit) {
-          fetchEditProcess(JSON.stringify(json))
+          fetchEditProcess(JSON.stringify(json), processName);
         } else {
-          fetchSaveProcess(JSON.stringify(json));
+          fetchSaveProcess(JSON.stringify(json), processName);
         }
 
         fetchProcesses().then((res) => {
@@ -206,9 +208,25 @@ export function BpmnModelerPage({ isEdit, isCreate }) {
     })
   }, [fetchProcesses])
 
+  const changeHandler = event => {
+    setProcessName(event.target.value)
+  }
+
   return (
     <div className="main-page">
       <aside className='sidebar-menu'>
+        <div className="input-field">
+          <input
+            placeholder=""
+            id="process-name"
+            type="text"
+            name="process name"
+            className="gray-input"
+            value={processName}
+            onChange={changeHandler}
+          />
+          <label htmlFor="process-name">Process name</label>
+        </div>
         <div className="save-actions">
           <a
             className="save-link btn yellow darken-4"

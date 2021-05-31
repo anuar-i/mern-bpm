@@ -13,7 +13,7 @@ export const SidebarMenu = ({ processes = [] }) => {
         return (
           <li key={`${index}-${process._id}`}>
             <div className="menu-item">
-              <span>Process - {index}</span>&nbsp;&nbsp;&nbsp;
+              <span>{process.name} - {index}</span>&nbsp;&nbsp;&nbsp;
               <Link to={`/edit/${process._id}`}>Open</Link>
             </div>
           </li>
