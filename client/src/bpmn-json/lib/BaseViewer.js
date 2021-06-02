@@ -33,6 +33,17 @@ import {
 import {
   wrapForCompatibility
 } from './util/CompatibilityUtil';
+/* <project-logo> */
+
+import {
+  open as openPoweredBy,
+  BPMNIO_IMG,
+  LINK_STYLES as BPMNIO_LINK_STYLES
+} from './util/PoweredByUtil';
+
+import {
+  event as domEvent
+} from 'min-dom';
 
 /**
  * A base viewer for BPMN 2.0 diagrams.
@@ -741,19 +752,6 @@ function findBPMNDiagram(definitions, diagramId) {
     return element.id === diagramId;
   }) || null;
 }
-
-
-/* <project-logo> */
-
-import {
-  open as openPoweredBy,
-  BPMNIO_IMG,
-  LINK_STYLES as BPMNIO_LINK_STYLES
-} from './util/PoweredByUtil';
-
-import {
-  event as domEvent
-} from 'min-dom';
 
 /**
  * Adds the project logo to the diagram container as

@@ -166,7 +166,7 @@ export default function LabelBehavior(
       return;
     }
 
-    businessObject = element.businessObject,
+    businessObject = element.businessObject;
     di = businessObject.di;
 
 

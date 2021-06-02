@@ -1,16 +1,17 @@
 import React, {useCallback, useContext, useEffect, useState} from 'react';
-import Modeler from "bpmn-js/lib/Modeler";
+import Modeler from "../bpmn-json/lib/Modeler";
 import "bpmn-js/dist/assets/diagram-js.css";
 import "bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css";
 import {useHttp} from "../hooks/http.hook";
 import {AuthContext} from "../context/AuthContext";
 import {useMessage} from "../hooks/message.hook";
-import {useHistory, useParams} from "react-router-dom";
+import {useHistory, useParams, useRouteMatch} from "react-router-dom";
 import {SidebarMenu} from "../components/SidebarMenu";
 import {Loader} from "../components/Loader";
 const xml2js = require('xml2js');
 
-export function BpmnModelerPage({ isEdit, isCreate }) {
+export function BpmnModelerPage({ isEdit }) {
+  const match = useRouteMatch();
   const [diagram, setDiagram] = useState('');
   const [processName, setProcessName] = useState('');
   const [processes, setProcesses] = useState([]);
@@ -31,28 +32,22 @@ export function BpmnModelerPage({ isEdit, isCreate }) {
   const history = useHistory();
 
   useEffect(() => {
-    if (isEdit) {
-      fetchProcess(processId);
-    }
-  }, [isEdit]);
-
-  useEffect(() => {
-    if (isCreate) {
+    if (match.path === '/create') {
       fetchDefaultProcess();
     }
-  }, [isCreate]);
+  }, [match.path]);
 
   useEffect(() => {
-    if (!isEdit) {
-      if (diagram.length === 0) {
-        fetchDefaultProcess();
-      }
+    console.log(match)
+    if (match.params.id) {
+      fetchProcess(match.params.id);
     }
-  }, [diagram]);
+  }, [match.params.id]);
 
   const fetchSaveProcess = useCallback(async (process, name) => {
     try {
-      const fetched = await request('/api/process', 'POST', {process, name}, {
+      const defaultName = name ? name : 'process';
+      const fetched = await request('/api/process', 'POST', {process, name: defaultName}, {
         Authorization: `Bearer ${token}`
       })
 
@@ -115,7 +110,7 @@ export function BpmnModelerPage({ isEdit, isCreate }) {
       setDiagram(fetched.defaultProcess);
     } catch (e) {
       setDiagram(`<?xml version="1.0" encoding="UTF-8"?>
-        <bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" targetNamespace="http://bpmn.io/schema/bpmn" id="Definitions_1">
+        <bpmn:definitions>
           <bpmn:process id="Process_1" isExecutable="false">
             <bpmn:startEvent id="StartEvent_1"/>
           </bpmn:process>
@@ -138,14 +133,14 @@ export function BpmnModelerPage({ isEdit, isCreate }) {
       }
     });
     try {
-      loadDiagram();
+      loadDiagram(diagram);
     } catch (e) {
       console.log(e);
     }
   }
 
-  async function loadDiagram() {
-    await modeler.importXML(diagram);
+  async function loadDiagram(diagramToSave) {
+    await modeler.importXML(diagramToSave);
   }
 
   function saveXML() {
