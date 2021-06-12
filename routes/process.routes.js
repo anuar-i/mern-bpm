@@ -5,10 +5,10 @@ const router = Router()
 
 router.post('/', auth, async (req, res) => {
   try {
-    const {process, name} = req.body
+    const {process, name, processXml} = req.body
 
     const bpmnProcess = new Process({
-      process, name, owner: req.user.userId
+      process, processXml, name, owner: req.user.userId
     })
 
     await bpmnProcess.save()

@@ -38,16 +38,15 @@ export function BpmnModelerPage({ isEdit }) {
   }, [match.path]);
 
   useEffect(() => {
-    console.log(match)
     if (match.params.id) {
       fetchProcess(match.params.id);
     }
   }, [match.params.id]);
 
-  const fetchSaveProcess = useCallback(async (process, name) => {
+  const fetchSaveProcess = useCallback(async (process, name, processXml) => {
     try {
       const defaultName = name ? name : 'process';
-      const fetched = await request('/api/process', 'POST', {process, name: defaultName}, {
+      const fetched = await request('/api/process', 'POST', {process, name: defaultName, processXml}, {
         Authorization: `Bearer ${token}`
       })
 
@@ -57,9 +56,9 @@ export function BpmnModelerPage({ isEdit }) {
     } catch (e) {}
   }, [token, request]);
 
-  const fetchEditProcess = useCallback(async (process, name) => {
+  const fetchEditProcess = useCallback(async (process, name, processXml) => {
     try {
-      const fetched = await request('/api/process', 'PUT', {processId, process, name}, {
+      const fetched = await request('/api/process', 'PUT', {processId, process, name, processXml}, {
         Authorization: `Bearer ${token}`
       });
 
@@ -112,7 +111,7 @@ export function BpmnModelerPage({ isEdit }) {
       setDiagram(`<?xml version="1.0" encoding="UTF-8"?>
         <bpmn:definitions>
           <bpmn:process id="Process_1" isExecutable="false">
-            <bpmn:startEvent id="StartEvent_1"/>
+            <bpmn:startBpmnJsonEvent id="StartEvent_1"/>
           </bpmn:process>
           <bpmndi:BPMNDiagram id="BPMNDiagram_1">
             <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">
@@ -153,9 +152,9 @@ export function BpmnModelerPage({ isEdit }) {
         }
 
         if (isEdit) {
-          fetchEditProcess(JSON.stringify(json), processName);
+          fetchEditProcess(JSON.stringify(json), processName, xml);
         } else {
-          fetchSaveProcess(JSON.stringify(json), processName);
+          fetchSaveProcess(JSON.stringify(json), processName, xml);
         }
 
         fetchProcesses().then((res) => {
