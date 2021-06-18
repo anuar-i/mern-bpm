@@ -62,3 +62,26 @@ input.yellow-input:focus {
   fill: green !important; /* color elements as green */
   stroke: yellow;
 }
+
+.bjs-powered-by {
+  display: none;
+}
+
+.save-link {
+  margin-right: 10px;
+}
+
+.main-page {
+  display: flex;
+  justify-content: space-between;
+}
+
+.save-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.sidebar-menu {
+  margin: 5px;
+}
